@@ -4,7 +4,7 @@
       <el-form id="search-form2" ref="form" :model="params" label-width="90px">
         <div class="group">
           <el-form-item label="标签名称">
-            <el-input v-model="labelName" placeholder="请输入标签名称" clearable />
+            <el-input v-model="params.name" placeholder="请输入标签名称" clearable />
           </el-form-item>
           <el-form-item label="游戏名称">
             <el-select v-model="params.gameId" placeholder="全部" filterable clearable style="max-width: 180px">
@@ -150,17 +150,6 @@ export default {
     }
   },
   watch: {
-    labelName(val) {
-      if (val) {
-        this.dataList.some(element => {
-          if (element.name === val) {
-            this.params.id = element.id
-          }
-        })
-      } else {
-        this.params.id = ''
-      }
-    },
     IsEnable(val) {
       if (val) {
         if (val === '启用') {

@@ -570,9 +570,7 @@ export default {
       if (!data.children) {
         this.$set(data, 'children', [])
       }
-      if (this.allAreaShow) {
-        this.showAllArea()
-      }
+      this.showAllArea()
       data.children.push(newChild)
     },
     // 删除服务器
@@ -709,21 +707,28 @@ export default {
       if (!data.children) {
         this.$set(data, 'children', [])
       }
-      if (this.gradeAllShow) {
-        this.showAllGrade()
-      }
+      this.showAllGrade()
       data.children.push(newChild)
     },
     // 删除等级
     removeLevel(node, data) {
       if (data.children && data.children.length) {
-        this.$message.error('该段位下已经存在服务器，不能删除')
-        return
+        this.$confirm('该段位下已经存在等级，确定删除吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          deleteService()
+        }).catch(() => {})
+      } else {
+        deleteService()
       }
-      const parent = node.parent
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.number === data.number)
-      children.splice(index, 1)
+      function deleteService() {
+        const parent = node.parent
+        const children = parent.data.children || parent.data
+        const index = children.findIndex(d => d.number === data.number)
+        children.splice(index, 1)
+      }
     },
     // 添加段位
     addGrade() {

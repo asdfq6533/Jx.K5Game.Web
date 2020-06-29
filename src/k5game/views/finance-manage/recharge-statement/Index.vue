@@ -3,44 +3,25 @@
     <div style="padding: 10px 20px 0 20px;">
       <el-form id="search-form2" ref="form" :model="params" label-width="90px">
         <div class="group">
-          <el-form-item label="商品名称">
-            <el-input v-model="params.title" placeholder="请输入商品名称" clearable />
+          <el-form-item label="对账单号">
+            <el-input v-model="params.title" placeholder="请输入对账单号" clearable />
           </el-form-item>
-          <el-form-item label="游戏名称">
+          <el-form-item label="订单编号">
+            <el-input v-model="params.userName" placeholder="输入订单编号" clearable />
+          </el-form-item>
+          <el-form-item label="支付方式">
             <el-select v-model="gameName" placeholder="全部" filterable clearable>
               <el-option
-                v-for="item in getAllGames"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="卖家">
-            <el-input v-model="params.userName" placeholder="输入卖家用户名" clearable />
-          </el-form-item>
-          <el-form-item label="卖家手机号">
-            <el-input v-model="params.phoneNum" placeholder="输入卖家手机号" clearable />
-          </el-form-item>
-          <el-form-item label="销售模式">
-            <el-select v-model="params.saleMode" placeholder="全部" filterable clearable style="maxWidth:185px">
-              <el-option
-                label="寄售交易"
-                value="寄售交易"
+                label="支付宝"
+                value="支付宝"
               />
               <el-option
-                label="自主经营"
-                value="自主经营"
+                label="微信"
+                value="微信"
               />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="商品状态">
-            <el-select v-model="status" placeholder="全部" filterable clearable style="maxWidth:185px">
               <el-option
-                v-for="item in productStatus"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
+                label="k币"
+                value="k币"
               />
             </el-select>
           </el-form-item>
@@ -62,11 +43,6 @@
     </div>
     <ul class="operate">
       <li>
-        <el-button type="success" class="my-btn-icon" @click="batchRemove">
-          批量下架
-        </el-button>
-      </li>
-      <!-- <li>
         <el-button type="primary" class="my-btn-icon">
           导出勾选项
         </el-button>
@@ -75,23 +51,20 @@
         <el-button type="primary" class="my-btn-icon">
           导出搜索结果
         </el-button>
-      </li> -->
+      </li>
     </ul>
     <lxz-table
       ref="multipleTable"
       :table-data="dataList"
       :columns="[
         { slot: 'selection' },
-        { slot: 'pic' },
-        { label: '商品名称', prop: 'title', width: '180px' },
-        { slot:'gameName' },
-        { slot: 'price'},
-        { label: '销售模式', prop: 'saleMode',width:'130px'},
-        { slot: 'label' },
-        { slot: 'sallerUserName'},
-        {slot:'phoneNum'},
-        { slot: 'status' ,width:'130px'},
-        { slot: 'creatTime' },
+        { label: '对账单号', prop: 'title', width: '180px' },
+        { label: '订单编号', prop: 'title', width: '180px' },
+        { label: '用户昵称', prop: 'title', width: '180px' },
+        { label: '充值数额', prop: 'title', width: '180px' },
+        { label: '实付金额', prop: 'title', width: '180px' },
+        { label: '支付方式', prop: 'title', width: '180px' },
+        { label: '支付时间', prop: 'title', width: '180px' },
         { slot: 'operate'}
       ]"
       :page-obj="pageObj"

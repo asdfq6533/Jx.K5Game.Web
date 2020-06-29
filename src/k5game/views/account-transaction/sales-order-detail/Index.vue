@@ -19,7 +19,7 @@
         <div class="group">
           <div class="group-item">
             <label>订单状态：</label>
-            <p style="color:#108EE9">{{ getStaus }}</p>
+            <p style="color:#108EE9">{{ getStaus }}<span v-if="detail.remark" style="color:#333;">({{ detail.remark }})</span></p>
           </div>
           <div class="group-item">
             <label>支付方式：</label>
@@ -82,11 +82,15 @@
             <p>{{ getGameName }}</p>
           </div>
           <div class="group-item">
-            <label>销售模式：</label>
-            <p>{{ productInfo.saleMode }}</p>
+            <label>游戏区服：</label>
+            <p>{{ platform }}</p>
           </div>
         </div>
         <div class="group">
+          <div class="group-item">
+            <label>销售模式：</label>
+            <p>{{ productInfo.saleMode }}</p>
+          </div>
           <div class="group-item">
             <label>游戏账号：</label>
             <p>{{ sensInfo.account }}</p>
@@ -94,6 +98,42 @@
           <div class="group-item">
             <label>游戏密码：</label>
             <p>{{ sensInfo.password }}</p>
+          </div>
+        </div>
+        <div class="group">
+          <div class="group-item">
+            <label>手机绑定：</label>
+            <p>{{ saleAccountTable.isBindPhone?'是':'否' }}</p>
+          </div>
+          <div v-if="saleAccountTable.isBindPhone" class="group-item">
+            <label>绑定手机：</label>
+            <p>{{ sensInfo.bindPhone }}</p>
+          </div>
+          <div class="group-item">
+            <label>邮箱绑定：</label>
+            <p>{{ sensInfo.isBindEmail?'是':'否' }}</p>
+          </div>
+          <div v-if="sensInfo.isBindEmail" class="group-item">
+            <label>绑定邮箱：</label>
+            <p>{{ sensInfo.bindEmail }}</p>
+          </div>
+          <div v-if="sensInfo.isBindEmail" class="group-item">
+            <label>邮箱密码：</label>
+            <p>{{ sensInfo.emailPassword }}</p>
+          </div>
+          <div class="group-item">
+            <label>密保设置：</label>
+            <p>{{ sensInfo.encryptedForm?'是':'否' }}</p>
+          </div>
+        </div>
+        <div v-for="(item, index) in sensInfo.encryptedForm" :key="index" class="group">
+          <div class="group-item">
+            <label>密保问题{{ index + 1 }}：</label>
+            <p>{{ item.questionVal }}</p>
+          </div>
+          <div class="group-item">
+            <label>密保答案{{ index + 1 }}：</label>
+            <p>{{ item.answerVal }}</p>
           </div>
         </div>
       </order-detail>
@@ -155,7 +195,9 @@ export default {
           id: 2,
           name: '微信支付'
         }
-      ]
+      ],
+      platform: '',
+      saleAccountTable: ''
     }
   },
   computed: {
@@ -210,11 +252,13 @@ export default {
           this.detail = res.data.result
           this.productInfo = this.detail.commodityTable
           this.sallerUser = this.detail.commodityTable.sallerUser
+          this.saleAccountTable = this.detail.saleAccountTable
           if (this.detail.saleAccountTable.sensInfo) {
             this.sensInfo = JSON.parse(this.detail.saleAccountTable.sensInfo)
           }
           if (this.detail.saleAccountTable.baseInfo && this.detail.saleAccountTable.baseInfo !== 'string') {
             this.baseInfo = JSON.parse(this.detail.saleAccountTable.baseInfo)
+            this.platform = this.baseInfo.platform
           }
           this.user = this.detail.user
         }
@@ -232,12 +276,14 @@ export default {
     margin: 0;
     padding: 0;
   }
-  .container{
+  .orderDetail{
+    .container{
     margin-bottom: 40px;
     .group{
       display: flex;
       height: 30px;
       align-items: center;
+      flex-wrap: wrap;
       label{
           font-weight: normal;
           color: #7d7d7d;
@@ -250,6 +296,7 @@ export default {
         display: flex;
         width: 30%;
         padding: 5px 0;
+        flex-shrink: 0;
         p{
           overflow: hidden;
           white-space: nowrap;
@@ -270,6 +317,8 @@ export default {
       background:#f2f2f2
     }
   }
+  }
+
 }
 
 </style>

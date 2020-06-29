@@ -26,19 +26,19 @@ const accountDealingRouter = {
       hidden: true,
       meta: { title: '商品详情', noCache: true, roles: ['Pages.Commodity'], breadNumber: 3 }
     },
-    // {
-    //   path: 'product-check',
-    //   component: () => import('@/k5game/views/account-transaction/product-check/Index'),
-    //   name: 'AccountProductOrders',
-    //   meta: { title: '商品审核', noCache: true, roles: ['Pages.AccountTransaction.Order'], breadNumber: 2 }
-    // },
-    // {
-    //   path: 'product-check/detail',
-    //   component: () => import('@/k5game/views/account-transaction/check-detail/Index'),
-    //   name: 'ProductCheckDetail',
-    //   hidden: true,
-    //   meta: { title: '审核详情', noCache: true, roles: ['Pages.AccountTransaction.Product'], breadNumber: 3 }
-    // },
+    {
+      path: 'product-check',
+      component: () => import('@/k5game/views/account-transaction/product-check/Index'),
+      name: 'AccountProductOrders',
+      meta: { title: '商品审核', noCache: true, roles: ['Pages.AccountTransaction.Order'], breadNumber: 2 }
+    },
+    {
+      path: 'product-check/detail',
+      component: () => import('@/k5game/views/account-transaction/check-detail/Index'),
+      name: 'ProductCheckDetail',
+      hidden: true,
+      meta: { title: '审核详情', noCache: true, roles: ['Pages.AccountTransaction.Product'], breadNumber: 3 }
+    },
     {
       path: 'sale-order',
       component: () => import('@/k5game/views/account-transaction/sales-order/Index'),

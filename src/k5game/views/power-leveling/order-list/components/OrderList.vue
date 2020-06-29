@@ -45,6 +45,30 @@
             value="匠心"
           />
           <el-option
+            label="微信--露露"
+            value="微信--露露"
+          />
+          <el-option
+            label="微信--k5"
+            value="微信--k5"
+          />
+          <el-option
+            label="微信--敏敏"
+            value="微信--敏敏"
+          />
+          <el-option
+            label="微信--盈盈"
+            value="微信--盈盈"
+          />
+          <el-option
+            label="微信--团子"
+            value="微信--团子"
+          />
+          <el-option
+            label="微信--机房"
+            value="微信--机房"
+          />
+          <el-option
             label="app"
             value="app"
           />

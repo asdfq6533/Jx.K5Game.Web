@@ -12,6 +12,14 @@ export function GetPagedCommoditiesAsync(data) {
     data
   })
 }
+// 分页获取所有商品审核列表
+export function GetPagedExamineCommoditiesAsync(data) {
+  return request({
+    url: '/api/services/k5gamePro/commodityService/GetPagedExamineCommoditiesAsync',
+    method: 'post',
+    data
+  })
+}
 // 获取当前登录人的商品
 export function GetCurrentPagedCommoditiesAsync(data) {
   return request({
@@ -24,6 +32,15 @@ export function GetCurrentPagedCommoditiesAsync(data) {
 export function GetCommodityDetailsAsync(data) {
   return request({
     url: '/api/services/k5gamePro/commodityService/GetCommodityDetailsAsync',
+    method: 'post',
+    data
+  })
+}
+
+// 获取商品操作日志
+export function GetCommodityLogAsync(data) {
+  return request({
+    url: '/api/services/k5gamePro/commodityService/GetCommodityLogAsync',
     method: 'post',
     data
   })

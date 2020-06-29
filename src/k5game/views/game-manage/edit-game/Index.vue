@@ -650,9 +650,7 @@ export default {
       if (!data.children) {
         this.$set(data, 'children', [])
       }
-      if (this.allAreaShow) {
-        this.showAllArea()
-      }
+      this.showAllArea()
       data.children.push(newChild)
     },
     // 获取选中的节点
@@ -750,9 +748,7 @@ export default {
       if (!data.children) {
         this.$set(data, 'children', [])
       }
-      if (this.gradeAllShow) {
-        this.showAllGrade()
-      }
+      this.showAllGrade()
       data.children.push(newChild)
     },
     // 删除等级

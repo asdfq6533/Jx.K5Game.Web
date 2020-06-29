@@ -3,11 +3,7 @@
     <el-card class="my-card">
       <div class="container">
         <div class="left">
-          <div>
-            <page-header
-              title="任务详情"
-            />
-          </div>
+          <el-page-header content="任务详情" style="margin-bottom: 20px" @back="goBack" />
           <div class="content">
             <div class="detailForm">
               <div v-if="linkError" class="tips">
@@ -30,6 +26,14 @@
                 <div class="group-item">
                   <label>下单渠道：</label>
                   <p>{{ detail.sources }}</p>
+                </div>
+                <div v-if="chooseTaobao" class="group-item">
+                  <label>订单号：</label>
+                  <p>{{ detail.taobaoOrderId }}</p>
+                </div>
+                <div v-if="chooseWeixin" class="group-item">
+                  <label>客户微信号：</label>
+                  <p>{{ detail.wx }}</p>
                 </div>
                 <div class="group-item">
                   <label>邀请人数：</label>
@@ -120,14 +124,14 @@
 </template>
 
 <script>
-import PageHeader from '@/k5game/components/PageHeader'
 import * as murlocSkinApi from '@/api/murloc-skin'
 // import config from '@/config'
 export default {
   name: 'TaskDetail',
-  components: { PageHeader },
   data() {
     return {
+      chooseTaobao: false,
+      chooseWeixin: false,
       linkAccountList: [],
       detail: {},
       logLists: [],
@@ -150,6 +154,9 @@ export default {
   mounted() {
   },
   methods: {
+    goBack() {
+      this.$router.go(-1)
+    },
     getDetail() {
       if (!this.id) {
         return
@@ -182,6 +189,16 @@ export default {
             this.linkError = true
           }
           console.log(this.detail)
+          if (this.detail.sources.indexOf('淘宝') > -1) {
+            this.chooseWeixin = false
+            this.chooseTaobao = true
+          } else if (this.detail.sources.indexOf('微信') > -1) {
+            this.chooseWeixin = true
+            this.chooseTaobao = false
+          } else {
+            this.chooseTaobao = false
+            this.chooseWeixin = false
+          }
         }
       })
     },
@@ -241,12 +258,6 @@ export default {
     padding: 0;
     margin: 0;
   }
-}
-.my-card{
-  /deep/.el-card__body{
-    padding: 0 !important;
-  }
-  padding: 0;
 }
 .content{
   padding: 10px 20px;

@@ -10,20 +10,62 @@
           <el-input v-model="form.link" placeholder="请输入邀请链接" />
         </el-form-item>
         <el-form-item label="下单渠道：" prop="sources">
-          <el-select v-model="form.sources" filterable allow-create placeholder="请选择下单渠道" style="width: 100%">
+          <el-select v-model="form.sources" filterable allow-create placeholder="请选择下单渠道" style="width: 100%" @change="chooseSource">
             <el-option
-              label="淘宝"
-              value="淘宝"
+              label="淘宝--匠心"
+              value="淘宝--匠心"
             />
             <el-option
-              label="微信"
-              value="微信"
+              label="淘宝--骏网"
+              value="淘宝--骏网"
+            />
+            <el-option
+              label="淘宝--柒柒"
+              value="淘宝--柒柒"
+            />
+            <el-option
+              label="淘宝--见中"
+              value="淘宝--见中"
+            />
+            <el-option
+              label="淘宝--无极"
+              value="淘宝--无极"
+            />
+            <el-option
+              label="微信--露露"
+              value="微信--露露"
+            />
+            <el-option
+              label="微信--k5"
+              value="微信--k5"
+            />
+            <el-option
+              label="微信--敏敏"
+              value="微信--敏敏"
+            />
+            <el-option
+              label="微信--盈盈"
+              value="微信--盈盈"
+            />
+            <el-option
+              label="微信--团子"
+              value="微信--团子"
+            />
+            <el-option
+              label="微信--机房"
+              value="微信--机房"
             />
             <el-option
               label="补单"
               value="补单"
             />
           </el-select>
+        </el-form-item>
+        <el-form-item v-if="chooseTaobao" label="订单号" prop="taobaoOrderId">
+          <el-input v-model="form.taobaoOrderId" placeholder="请输入订单号" />
+        </el-form-item>
+        <el-form-item v-if="chooseWeixin" label="客户微信号" prop="wx">
+          <el-input v-model="form.wx" placeholder="请输入客户微信号" />
         </el-form-item>
         <el-form-item label="邀请人数：" prop="linkCount">
           <el-select v-model="form.linkCount" filterable allow-create placeholder="请选择邀请人数" style="width: 100%">
@@ -63,14 +105,42 @@
   </div>
 </template>
 <script>
-// import * as daiLianOrder from '@/api/powerLeveling'
-// import * as gameInfoApi from '@/api/gameInfo'
-// // import FullTag from './FullTag'
 import * as murlocSkinApi from '@/api/murloc-skin'
 export default {
   name: 'ReleaseTask',
   data() {
+    const reg = /^[A-Za-z0-9]+$/
+    var validateTaobaoOrderId = (rule, value, callback) => {
+      if (this.form.sources.indexOf('淘宝') > -1) {
+        if (!value) {
+          return callback(new Error('请输入订单号'))
+        }
+        if (value.length !== 19) {
+          return callback(new Error('订单号只可以输入19位英文或数字，不能有符号和中文'))
+        }
+        if (!reg.test(value)) {
+          return callback(new Error('订单号只可以输入19位英文或数字，不能有符号和中文'))
+        } else {
+          return callback()
+        }
+      } else {
+        return callback()
+      }
+    }
+    var validateWx = (rule, value, callback) => {
+      if (this.form.sources.indexOf('微信') > -1) {
+        if (!value) {
+          return callback(new Error('请输入客户微信号'))
+        } else {
+          return callback()
+        }
+      } else {
+        return callback()
+      }
+    }
     return {
+      chooseTaobao: false,
+      chooseWeixin: false,
       form: {
         linkLevel: 20
       },
@@ -84,10 +154,10 @@ export default {
           { pattern: /(http|https):\/\/([\w.]+\/?)\S*/, message: '请输入正确的邀请链接,以http或者https开头', trigger: 'blur' }
         ],
         sources: [
-          { required: true, message: '请选择下单渠道', trigger: 'blur' }
+          { required: true, message: '请选择下单渠道', trigger: 'change' }
         ],
         linkCount: [
-          { required: true, message: '请选择邀请人数', trigger: 'blur' }
+          { required: true, message: '请选择邀请人数', trigger: 'change' }
         ],
         linkLevel: [
           { required: true, message: '请输入邀请用户等级要求', trigger: 'blur' }
@@ -95,6 +165,12 @@ export default {
         totalAmount: [
           { required: true, message: '请输入费用', trigger: 'blur' },
           { pattern: /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/, message: '请输入正确价格，最多保留2位小数', trigger: 'blur' }
+        ],
+        taobaoOrderId: [
+          { validator: validateTaobaoOrderId, trigger: 'blur' }
+        ],
+        wx: [
+          { validator: validateWx, trigger: 'blur' }
         ]
       }
     }
@@ -109,6 +185,18 @@ export default {
 
   },
   methods: {
+    chooseSource(val) {
+      if (val.indexOf('淘宝') > -1) {
+        this.chooseWeixin = false
+        this.chooseTaobao = true
+      } else if (val.indexOf('微信') > -1) {
+        this.chooseTaobao = false
+        this.chooseWeixin = true
+      } else {
+        this.chooseTaobao = false
+        this.chooseWeixin = false
+      }
+    },
     goBack() {
       this.$emit('onBack')
     },

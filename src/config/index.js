@@ -8,7 +8,7 @@ const proConfig = {
 
 const testConfig = {
   baseUrl: 'http://adsl01.ruianer.com:6500',
-  // baseUrl: 'http://localhost:54202/',
+  // baseUrl: 'http://localhost:61352/',
   matomoUrl: 'http://analytics.jxstudio.cn',
   pictureUrl: '/upload/picture/',
   imageUrl: '/Temp/Downloads/',

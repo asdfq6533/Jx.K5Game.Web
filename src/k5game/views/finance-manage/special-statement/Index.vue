@@ -3,50 +3,85 @@
     <div style="padding: 10px 20px 0 20px;">
       <el-form id="search-form2" ref="form" :model="params" label-width="90px">
         <div class="group">
-          <el-form-item label="商品名称">
-            <el-input v-model="params.title" placeholder="请输入商品名称" clearable />
+          <el-form-item label="订单编号">
+            <el-input v-model="params.orderId" placeholder="输入订单编号" clearable />
           </el-form-item>
-          <el-form-item label="游戏名称">
-            <el-select v-model="gameName" placeholder="全部" filterable clearable>
+          <el-form-item label="结算单号">
+            <el-input v-model="params.id" placeholder="输入结算单号" clearable />
+          </el-form-item>
+          <el-form-item label="订单来源">
+            <el-select v-model="params.source" style="width: 160px" clearable placeholder="全部">
               <el-option
-                v-for="item in getAllGames"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
+                label="5173"
+                value="5173"
+              />
+              <el-option
+                label="无极店铺"
+                value="无极店铺"
+              />
+              <el-option
+                label="骏网"
+                value="骏网"
+              />
+              <el-option
+                label="柒柒"
+                value="柒柒"
+              />
+              <el-option
+                label="微信"
+                value="微信"
+              />
+              <el-option
+                label="千鹰"
+                value="千鹰"
+              />
+              <el-option
+                label="见中"
+                value="见中"
+              />
+              <el-option
+                label="匠心"
+                value="匠心"
+              />
+              <el-option
+                label="app"
+                value="app"
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="卖家">
-            <el-input v-model="params.userName" placeholder="输入卖家用户名" clearable />
+          <el-form-item label="商家">
+            <el-input v-model="params.salerNickName" placeholder="输入商家名称" clearable />
           </el-form-item>
-          <el-form-item label="卖家手机号">
-            <el-input v-model="params.phoneNum" placeholder="输入卖家手机号" clearable />
+          <el-form-item label="用户">
+            <el-input v-model="params.buyerNickName" placeholder="输入用户名称" clearable />
           </el-form-item>
-          <el-form-item label="销售模式">
-            <el-select v-model="params.saleMode" placeholder="全部" filterable clearable style="maxWidth:185px">
+          <el-form-item label="打手">
+            <el-input v-model="params.beaterNickName" placeholder="输入打手名称" clearable />
+          </el-form-item>
+          <el-form-item label="是否结算">
+            <el-select v-model="params.isCheck" placeholder="全部" filterable clearable style="maxWidth:185px">
               <el-option
-                label="寄售交易"
-                value="寄售交易"
+                label="是"
+                value="true"
               />
               <el-option
-                label="自主经营"
-                value="自主经营"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="商品状态">
-            <el-select v-model="status" placeholder="全部" filterable clearable style="maxWidth:185px">
-              <el-option
-                v-for="item in productStatus"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
+                label="否"
+                value="false"
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="发布时间">
+          <el-form-item label="生成时间">
             <el-date-picker
-              v-model="creatTime"
+              v-model="downOrderTime"
+              type="daterange"
+              range-separator="~"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+            />
+          </el-form-item>
+          <el-form-item label="结算时间">
+            <el-date-picker
+              v-model="checkTime"
               type="daterange"
               range-separator="~"
               start-placeholder="开始日期"
@@ -62,36 +97,38 @@
     </div>
     <ul class="operate">
       <li>
-        <el-button type="success" class="my-btn-icon" @click="batchRemove">
-          批量下架
+        <el-button type="success" class="my-btn-icon" @click="batchCheckSettlement">
+          批量结算核对
         </el-button>
       </li>
-      <!-- <li>
-        <el-button type="primary" class="my-btn-icon">
+      <li>
+        <el-button type="primary" class="my-btn-icon" @click="exportChoice">
           导出勾选项
         </el-button>
       </li>
       <li>
-        <el-button type="primary" class="my-btn-icon">
+        <el-button type="primary" class="my-btn-icon" @click="exportAll">
           导出搜索结果
         </el-button>
-      </li> -->
+      </li>
     </ul>
     <lxz-table
       ref="multipleTable"
       :table-data="dataList"
       :columns="[
         { slot: 'selection' },
-        { slot: 'pic' },
-        { label: '商品名称', prop: 'title', width: '180px' },
-        { slot:'gameName' },
-        { slot: 'price'},
-        { label: '销售模式', prop: 'saleMode',width:'130px'},
-        { slot: 'label' },
-        { slot: 'sallerUserName'},
-        {slot:'phoneNum'},
-        { slot: 'status' ,width:'130px'},
-        { slot: 'creatTime' },
+        { label: '订单编号', prop: 'orderId', width: '180px' },
+        { label: '结算单号', prop: 'id',width:'180px'},
+        { label: '订单来源', prop: 'source',width:'130px'},
+        { label: '商家', prop: 'saller',width:'130px'},
+        { label: '用户', prop: 'buyer',width:'130px'},
+        { label: '打手', prop: 'beater.nickName',width:'130px'},
+
+        { slot: 'orderAmount' },
+        { label: '代练佣金', prop: 'powerLevelingReward'},
+        { label: '备注', prop: 'remark',width:'150px'},
+        { slot: 'downOrderTime' },
+        { slot: 'checkTime' },
         { slot: 'operate'}
       ]"
       :page-obj="pageObj"
@@ -103,80 +140,38 @@
         width="45"
       />
       <el-table-column
-        slot="pic"
-        label="主图"
-        width="160"
-      >
-        <template v-slot="scope">
-          <div class="pic-div">
-            <img v-if="scope.row.imagePath" :src="getPicRealUrl(scope.row.imagePath)">
-            <img v-else :src="require('@/assets/images/picture.png')">
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column
-        slot="price"
-        label="价格"
+        slot="beater"
+        label="打手"
         width="120"
       >
         <template v-slot="scope">
-          {{ scope.row.activityPrice?scope.row.activityPrice:scope.row.price }}
+          {{ scope.row.beater.nickName }}
         </template>
       </el-table-column>
       <el-table-column
-        slot="sallerUserName"
-        label="卖家"
+        slot="orderAmount"
+        label="订单金额"
       >
         <template v-slot="scope">
-          {{ scope.row.sallerUser.nickName }}
+          {{ scope.row.price }}
         </template>
       </el-table-column>
       <el-table-column
-        slot="phoneNum"
-        label="卖家手机号"
-      >
-        <template v-slot="scope">
-          {{ scope.row.sallerUser.phoneNumber }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        slot="gameName"
-        label="游戏名称"
-        width="180"
-      >
-        <template v-slot="scope">
-          {{ getGameName(scope.row) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        slot="label"
-        label="标签"
-        width="150"
-      >
-        <template v-slot="scope">
-          <div class="label-div">
-            <p v-for="(item, key) in scope.row.commodityLabelStr" :key="key">
-              {{ item }}
-            </p>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column
-        slot="status"
-        label="商品状态"
-        width="130"
-      >
-        <template v-slot="scope">
-          {{ scope.row.productStatus }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        slot="creatTime"
-        label="发布时间"
+        slot="downOrderTime"
+        label="生成时间"
         width="160"
       >
         <template v-slot="scope">
-          {{ scope.row.creationTime | timeFormatNotUtc }}
+          {{ scope.row.downOrderTime | timeFormatNotUtc }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        slot="checkTime"
+        label="结算时间"
+        width="160"
+      >
+        <template v-slot="scope">
+          {{ scope.row.checkTime | timeFormatNotUtc }}
         </template>
       </el-table-column>
       <el-table-column
@@ -187,11 +182,11 @@
       >
         <template v-slot="scope">
           <div class="icons-operate">
-            <a href="javascript:void(0)">
-              <p @click="goDtailProduct(scope.row)">查看</p>
-            </a>
-            <a v-if="scope.row.status === 2" href="javascript:void(0)">
-              <p @click="remove(scope.row)">下架</p>
+            <!-- <a href="javascript:void(0)">
+              <p @click="goDetail(scope.row)">查看</p>
+            </a> -->
+            <a v-if="!scope.row.isCheck" href="javascript:void(0)">
+              <p @click="CheckSettlement(scope.row)">结算核对</p>
             </a>
           </div>
         </template>
@@ -214,7 +209,8 @@ import moment from 'moment'
 import TipsDialog from '@/k5game/components/TipsDialog'
 import listMixin from '@/k5game/mixins/list-mixin'
 import LxzTable from '@/k5game/components/LxzTable'
-import * as accountTransactionApi from '@/api/account-transaction'
+import * as financeManageApi from '@/api/finance-manage'
+// eslint-disable-next-line no-unused-vars
 import config from '@/config'
 export default {
   name: 'AccountProductManage',
@@ -222,51 +218,36 @@ export default {
   mixins: [listMixin],
   data() {
     return {
-      id: [],
-      status: '',
-      gameName: '',
-      productStatus: [
-        {
-          id: 0,
-          name: '待审核'
-        },
-        {
-          id: 2,
-          name: '销售中'
-        },
-        {
-          id: 3,
-          name: '已出售'
-        },
-        {
-          id: 4,
-          name: '已下架'
-        },
-        {
-          id: -1,
-          name: '审核失败'
-        }
-      ],
+      tHeader: ['订单编号', '结算核对', '订单来源', '商家', '用户', '打手', '订单金额', '代练佣金', '备注', '生成时间', '结算时间'],
+      tValue: ['orderId', 'id', 'source', 'saller', 'buyer', 'beaterNickName', 'price', 'powerLevelingReward', 'remark', 'downOrderTime', 'checkTime'],
+      ids: [],
       multipleSelection: [],
       isDialogShow: false,
       title: '',
       creatTime: '',
       message: '',
       params: {
-        commodityLabelIds: [],
-        sorting: '',
         maxResultCount: 10,
         skipCount: 0
-      }
+      },
+      downOrderTime: '',
+      checkTime: '',
+      isExportAll: false
     }
   },
   computed: {
-    getAllGames() {
-      return this.$store.state.game.list
-    }
   },
   watch: {
-    creatTime(val) {
+    downOrderTime(val) {
+      if (val) {
+        this.params.orderStartTime = moment(val[0]).format('YYYY-MM-DD')
+        this.params.orderEndTime = moment(val[1]).add(1, 'days').format('YYYY-MM-DD')
+      } else {
+        this.params.orderStartTime = ''
+        this.params.orderEndTime = ''
+      }
+    },
+    checkTime(val) {
       if (val) {
         this.params.startTime = moment(val[0]).format('YYYY-MM-DD')
         this.params.endTime = moment(val[1]).add(1, 'days').format('YYYY-MM-DD')
@@ -274,91 +255,14 @@ export default {
         this.params.startTime = ''
         this.params.endTime = ''
       }
-    },
-    gameName(val) {
-      if (val) {
-        this.getAllGames.some(item => {
-          if (item.name === val) {
-            this.params.gameId = item.id
-          }
-        })
-      } else {
-        this.params.gameId = ''
-      }
-    },
-    status(val) {
-      if (val) {
-        this.productStatus.some(item => {
-          if (item.name === val) {
-            this.params.status = item.id
-          }
-        })
-      } else {
-        this.params.status = ''
-      }
     }
   },
   created() {
     this.search()
   },
   mounted() {
-    if (this.getAllGames.length === 0) {
-      this.$store.dispatch('game/getList')
-    }
   },
   methods: {
-    getGameName(value) {
-      let gameName = ''
-      this.getAllGames.some(item => {
-        if (item.id === value.gameId) {
-          gameName = item.name
-        }
-      })
-      return gameName
-    },
-    // 批量下架
-    batchRemove() {
-      this.id = []
-      if (this.multipleSelection.length === 0) {
-        this.$message.error('请至少选择一个数据')
-        return
-      }
-      for (let i = 0; i < this.multipleSelection.length; i++) {
-        if (this.multipleSelection[i].status !== 2) {
-          this.$message.error('请选择销售中的商品')
-          return
-        }
-      }
-      const number = this.multipleSelection.length
-      this.title = '批量下架提示'
-      this.message = '确定要下架' + number + '款商品吗？下架后，商品将不在列表显示。'
-      this.isDialogShow = true
-      this.multipleSelection.some(item => {
-        this.id.push(item.id)
-      })
-    },
-    // 单个下架
-    remove(item) {
-      this.id = []
-      this.title = '下架提示'
-      this.message = '确定要下架“' + item.title + '”吗？下架后，商品将不在出售列表显示。'
-      this.isDialogShow = true
-      this.id.push(item.id)
-      this.opertation = '下架'
-    },
-    // 下架
-    lowerShelfCommodity(id) {
-      accountTransactionApi.LowerShelfCommodityAsync({ id: id }).then(res => {
-        if (res.data.success) {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-          this.search()
-          this.isDialogShow = false
-        }
-      })
-    },
     // 搜索
     search() {
       this.params.skipCount = 0
@@ -370,39 +274,20 @@ export default {
     },
     // 重置
     reset() {
-      this.status = ''
-      this.gameName = ''
-      this.creatTime = ''
       for (const key in this.params) {
         this.params[key] = null
       }
       this.params.maxResultCount = 10
-      this.params.commodityLabelIds = []
-    },
-    // 图片真实地址
-    getPicRealUrl(val) {
-      const img = val.split('|')
-      return config.baseUrl + config.pictureUrl + img[0]
     },
     getList() {
-      accountTransactionApi.GetPagedCommoditiesAsync(this.params).then(res => {
+      financeManageApi.GetPagedSettlementsAsync(this.params).then(res => {
         const result = res.data.result
         this.pageObj.totalCount = result.totalCount
         this.dataList = result.items
         this.dataList.some(item => {
-          if (item.status === 0) {
-            this.$set(item, 'productStatus', '待审核')
-          } else if (item.status === -1) {
-            this.$set(item, 'productStatus', '审核失败')
-          } else if (item.status === 1) {
-            this.$set(item, 'productStatus', '待上架')
-          } else if (item.status === 2) {
-            this.$set(item, 'productStatus', '销售中')
-          } else if (item.status === 3) {
-            this.$set(item, 'productStatus', '已出售')
-          } else if (item.status === 4) {
-            this.$set(item, 'productStatus', '已下架')
-          }
+          this.$set(item, 'price', item.orderAmount.toFixed(2))
+          this.$set(item, 'powerLevelingReward', item.powerLevelingReward.toFixed(2))
+          this.$set(item, 'beaterNickName', item.beater.nickName)
         })
       })
     },
@@ -411,13 +296,97 @@ export default {
       this.multipleSelection = val
     },
     // 查看商品
-    goDtailProduct(row) {
+    goDetail(row) {
       this.$router.push({
-        name: 'AccountProductDetail',
-        query: {
-          id: row.id
+        name: 'specialOrderList'
+      })
+    },
+    // 单个结算核对按钮
+    CheckSettlement(item) {
+      this.ids = []
+      this.ids.push(item.id)
+      this.SettlementCheck()
+    },
+    // 批量结算核对按钮
+    batchCheckSettlement() {
+      this.ids = []
+      if (!this.multipleSelection.length) {
+        this.$message({
+          message: '请勾选操作项',
+          type: 'error'
+        })
+        return
+      }
+      this.multipleSelection.some(item => {
+        this.ids.push(item.id)
+      })
+      this.SettlementCheck()
+    },
+    // 结算核对
+    SettlementCheck() {
+      financeManageApi.CheckSettlementAsync({ ids: this.ids }).then(res => {
+        if (res.data.success) {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+          this.search()
         }
       })
+    },
+    // 导出勾选项
+    exportChoice() {
+      if (!this.multipleSelection.length) {
+        this.$message({
+          message: '请勾选操作项',
+          type: 'error'
+        })
+        return
+      }
+      this.list = this.multipleSelection
+      this.handleDownload()
+    },
+    // 导出搜索结果
+    exportAll() {
+      this.params.maxResultCount = this.pageObj.totalCount
+      this.params.skipCount = 0
+      financeManageApi.GetPagedSettlementsAsync(this.params).then(res => {
+        const result = res.data.result
+        this.pageObj.totalCount = result.totalCount
+        this.dataList = result.items
+        this.dataList.some(item => {
+          this.$set(item, 'price', item.orderAmount.toFixed(2))
+          this.$set(item, 'powerLevelingReward', item.powerLevelingReward.toFixed(2))
+          this.$set(item, 'beaterNickName', item.beater.nickName)
+        })
+        this.list = this.dataList
+        this.handleDownload()
+      })
+    },
+    handleDownload() {
+      import('@/api/Export2Excel').then(excel => {
+        const data = this.formatJson(this.tValue, this.list)
+        // console.log(data)
+        excel.export_json_to_excel({
+          header: this.tHeader,
+          data,
+          filename: this.filename,
+          autoWidth: this.autoWidth,
+          bookType: this.bookType
+        })
+        this.isExportAll = false
+      })
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        if (j === 'checkTime') {
+          return v[j] ? moment(v[j]).format('YYYY-MM-DD HH:mm') : ''
+        }
+        if (j === 'downOrderTime') {
+          return v[j] ? moment(v[j]).format('YYYY-MM-DD HH:mm') : ''
+        }
+        return v[j]
+      }))
     }
   }
 }

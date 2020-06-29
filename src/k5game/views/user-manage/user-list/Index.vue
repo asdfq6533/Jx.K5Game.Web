@@ -79,10 +79,10 @@
           </div>
         </el-form>
       </div>
-      <div class="exportBtn">
+      <!-- <div class="exportBtn">
         <el-button type="primary">导出勾选项</el-button>
         <el-button type="primary">导出搜索结果</el-button>
-      </div>
+      </div> -->
       <lxz-table
         ref="multipleTable"
         :table-data="dataList"

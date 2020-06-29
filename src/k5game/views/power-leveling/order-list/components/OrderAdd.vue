@@ -49,49 +49,65 @@
           <el-form-item label="代练账号" prop="accountNum">
             <el-input v-model="form.accountNum" placeholder="请输入代练账号" @keyup.enter.native="addClick" />
           </el-form-item>
-          <el-form-item label="淘宝订单号" prop="taoBaoOrderId">
-            <el-input v-model="form.taoBaoOrderId" placeholder="请输入淘宝订单号" @keyup.enter.native="addClick" />
-          </el-form-item>
-        </div>
-        <div class="my-input-group">
           <el-form-item label="账号密码" prop="accountPwd">
             <el-input v-model="form.accountPwd" placeholder="请输入代练账号密码" @keyup.enter.native="addClick" />
           </el-form-item>
+        </div>
+        <div class="my-input-group">
           <el-form-item label="来源渠道" prop="sources">
-            <el-select v-model="form.sources" filterable allow-create placeholder="请选择来源聚道" style="width: 100%">
+            <el-select v-model="form.sources" filterable allow-create placeholder="请选择来源聚道" style="width: 100%" @change="chooseSource">
               <el-option
                 label="5173"
                 value="5173"
               />
               <el-option
-                label="无极店铺"
-                value="无极店铺"
+                label="淘宝--匠心"
+                value="淘宝--匠心"
               />
               <el-option
-                label="骏网"
-                value="骏网"
+                label="淘宝--骏网"
+                value="淘宝--骏网"
               />
               <el-option
-                label="柒柒"
-                value="柒柒"
+                label="淘宝--柒柒"
+                value="淘宝--柒柒"
               />
               <el-option
-                label="微信"
-                value="微信"
+                label="淘宝--见中"
+                value="淘宝--见中"
               />
               <el-option
-                label="千鹰"
-                value="千鹰"
+                label="淘宝--无极"
+                value="淘宝--无极"
               />
               <el-option
-                label="见中"
-                value="见中"
+                label="微信--露露"
+                value="微信--露露"
               />
               <el-option
-                label="匠心"
-                value="匠心"
+                label="微信--k5"
+                value="微信--k5"
+              />
+              <el-option
+                label="微信--敏敏"
+                value="微信--敏敏"
+              />
+              <el-option
+                label="微信--盈盈"
+                value="微信--盈盈"
+              />
+              <el-option
+                label="微信--团子"
+                value="微信--团子"
+              />
+              <el-option
+                label="微信--机房"
+                value="微信--机房"
               />
             </el-select>
+          </el-form-item>
+          <el-form-item :label="chooseTaobao?'订单号':'客户微信号'" prop="taoBaoOrderId">
+            <el-input v-model="form.taoBaoOrderId" :placeholder="chooseTaobao?'请输入淘宝订单号':'请输入客户微信号'" @keyup.enter.native="addClick" />
           </el-form-item>
         </div>
         <div class="my-input-group">
@@ -193,7 +209,38 @@ export default {
   name: 'OrderAdd',
   components: { FullTag },
   data() {
+    const reg = /^[A-Za-z0-9]+$/
+    var validateTaobaoOrderId = (rule, value, callback) => {
+      if (this.form.sources.indexOf('淘宝') > -1) {
+        if (!value) {
+          return callback(new Error('请输入订单号'))
+        }
+        if (value.length !== 19) {
+          return callback(new Error('订单号只可以输入19位英文或数字，不能有符号和中文'))
+        }
+        if (!reg.test(value)) {
+          return callback(new Error('订单号只可以输入19位英文或数字，不能有符号和中文'))
+        } else {
+          return callback()
+        }
+      } else if (this.form.sources.indexOf('5173') > -1) {
+        if (!value) {
+          return callback(new Error('请输入订单号'))
+        } else {
+          return callback()
+        }
+      } else if (this.form.sources.indexOf('微信') > -1) {
+        if (!value) {
+          return callback(new Error('请输入客户微信号'))
+        } else {
+          return callback()
+        }
+      } else {
+        return callback()
+      }
+    }
     return {
+      chooseTaobao: true,
       fullTagList: [...luShiList, ...daShouCanUpdateList, ...daShouOnlyReadList],
       jsonOrderOnlyRead: '',
       jsonOrderCanUpdate: '',
@@ -242,7 +289,7 @@ export default {
           { required: true, message: '请选择来源渠道', trigger: 'blur' }
         ],
         taoBaoOrderId: [
-          { required: true, message: '请输入淘宝订单号', trigger: 'blur' }
+          { required: true, validator: validateTaobaoOrderId, trigger: 'blur' }
         ],
         PowerLevelingRequirement: [
           { required: true, message: '请输入代练要求', trigger: 'blur' }
@@ -333,6 +380,14 @@ export default {
     this.getAllGames()
   },
   methods: {
+    chooseSource(val) {
+      console.log(val)
+      if (val.indexOf('淘宝') > -1 || val.indexOf('5173') > -1) {
+        this.chooseTaobao = true
+      } else if (val.indexOf('微信') > -1) {
+        this.chooseTaobao = false
+      }
+    },
     setKeys(newValue) {
       let obj = {}
       if (newValue === '炉石传说') {

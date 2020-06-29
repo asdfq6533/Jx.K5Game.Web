@@ -183,7 +183,8 @@ export default {
     margin: 0;
     padding: 0;
   }
-  .container{
+  .orderDetail{
+    .container{
     margin-bottom: 40px;
     .group{
       display: flex;
@@ -231,6 +232,8 @@ export default {
       }
     }
   }
+  }
+
   .complaintBtn{
     margin-bottom: 10px;
     button{

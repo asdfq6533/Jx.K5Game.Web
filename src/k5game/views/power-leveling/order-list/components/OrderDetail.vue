@@ -108,7 +108,7 @@
               <td>{{ order.sources }}</td>
             </tr>
             <tr>
-              <td>淘宝订单Id</td>
+              <td>{{ order.sources.indexOf('微信') > -1 ?'客户微信号':'订单号' }}</td>
               <td>{{ order.taoBaoOrderId }}</td>
               <td>淘宝店铺备注</td>
               <td>{{ order.taoBaoRemark }}</td>
@@ -466,6 +466,11 @@ export default {
           result.jsonOrderOnlyRead = JSON.parse(result.jsonOrderOnlyRead)
         }
         this.order = result
+        // if (this.order.sources.indexOf('微信') > -1) {
+        //   this.sourcesTitle = '客户微信号'
+        // } else {
+        //   this.sourcesTitle = '订单号'
+        // }
       })
     },
     goBack() {

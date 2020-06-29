@@ -3,48 +3,80 @@
     <div style="padding: 10px 20px 0 20px;">
       <el-form id="search-form2" ref="form" :model="params" label-width="90px">
         <div class="group">
+          <el-form-item label="对账单号">
+            <el-input v-model="params.title" placeholder="请输入对账单号" clearable />
+          </el-form-item>
+          <el-form-item label="订单编号">
+            <el-input v-model="params.userName" placeholder="输入订单编号" clearable />
+          </el-form-item>
           <el-form-item label="商品名称">
-            <el-input v-model="params.title" placeholder="请输入商品名称" clearable />
+            <el-input v-model="params.phoneNum" placeholder="输入商品名称" clearable />
           </el-form-item>
-          <el-form-item label="游戏名称">
-            <el-select v-model="gameName" placeholder="全部" filterable clearable>
-              <el-option
-                v-for="item in getAllGames"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="卖家">
-            <el-input v-model="params.userName" placeholder="输入卖家用户名" clearable />
-          </el-form-item>
-          <el-form-item label="卖家手机号">
-            <el-input v-model="params.phoneNum" placeholder="输入卖家手机号" clearable />
-          </el-form-item>
-          <el-form-item label="销售模式">
+          <el-form-item label="来源">
             <el-select v-model="params.saleMode" placeholder="全部" filterable clearable style="maxWidth:185px">
               <el-option
-                label="寄售交易"
-                value="寄售交易"
+                label="5173"
+                value="5173"
               />
               <el-option
-                label="自主经营"
-                value="自主经营"
+                label="无极店铺"
+                value="无极店铺"
+              />
+              <el-option
+                label="骏网"
+                value="骏网"
+              />
+              <el-option
+                label="柒柒"
+                value="柒柒"
+              />
+              <el-option
+                label="微信"
+                value="微信"
+              />
+              <el-option
+                label="千鹰"
+                value="千鹰"
+              />
+              <el-option
+                label="见中"
+                value="见中"
+              />
+              <el-option
+                label="匠心"
+                value="匠心"
+              />
+              <el-option
+                label="app"
+                value="app"
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="商品状态">
-            <el-select v-model="status" placeholder="全部" filterable clearable style="maxWidth:185px">
+          <el-form-item label="是否问题单">
+            <el-select v-model="params.saleMode" placeholder="全部" filterable clearable style="maxWidth:185px">
               <el-option
-                v-for="item in productStatus"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
+                label="是"
+                value="是"
+              />
+              <el-option
+                label="否"
+                value="否"
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="发布时间">
+          <el-form-item label="是否结算">
+            <el-select v-model="params.saleMode" placeholder="全部" filterable clearable style="maxWidth:185px">
+              <el-option
+                label="是"
+                value="是"
+              />
+              <el-option
+                label="否"
+                value="否"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="日期范围">
             <el-date-picker
               v-model="creatTime"
               type="daterange"
@@ -62,11 +94,6 @@
     </div>
     <ul class="operate">
       <li>
-        <el-button type="success" class="my-btn-icon" @click="batchRemove">
-          批量下架
-        </el-button>
-      </li>
-      <!-- <li>
         <el-button type="primary" class="my-btn-icon">
           导出勾选项
         </el-button>
@@ -75,23 +102,22 @@
         <el-button type="primary" class="my-btn-icon">
           导出搜索结果
         </el-button>
-      </li> -->
+      </li>
     </ul>
     <lxz-table
       ref="multipleTable"
       :table-data="dataList"
       :columns="[
         { slot: 'selection' },
-        { slot: 'pic' },
-        { label: '商品名称', prop: 'title', width: '180px' },
-        { slot:'gameName' },
-        { slot: 'price'},
-        { label: '销售模式', prop: 'saleMode',width:'130px'},
-        { slot: 'label' },
-        { slot: 'sallerUserName'},
-        {slot:'phoneNum'},
-        { slot: 'status' ,width:'130px'},
-        { slot: 'creatTime' },
+        { label: '对账单号', prop: 'title', width: '180px' },
+        { label: '订单编号', prop: 'title', width: '180px' },
+        { label: '来源', prop: 'saleMode',width:'130px'},
+        { label: '商品名称', prop: 'saleMode',width:'130px'},
+        { label: '打手', prop: 'saleMode',width:'130px'},
+        { label: '订单金额', prop: 'saleMode',width:'130px'},
+        { label: '佣金', prop: 'saleMode',width:'130px'},
+        { label: '利润', prop: 'saleMode',width:'130px'},
+        { label: '备注', prop: 'saleMode',width:'130px'},
         { slot: 'operate'}
       ]"
       :page-obj="pageObj"
@@ -191,7 +217,7 @@
               <p @click="goDtailProduct(scope.row)">查看</p>
             </a>
             <a v-if="scope.row.status === 2" href="javascript:void(0)">
-              <p @click="remove(scope.row)">下架</p>
+              <p @click="remove(scope.row)">结算</p>
             </a>
           </div>
         </template>

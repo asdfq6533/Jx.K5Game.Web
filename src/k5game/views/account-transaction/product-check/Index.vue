@@ -4,10 +4,10 @@
       <el-form id="search-form2" ref="form" :model="params" label-width="90px">
         <div class="group">
           <el-form-item label="商品名称">
-            <el-input v-model="params.accountName" placeholder="请输入商品名称" />
+            <el-input v-model="params.title" placeholder="请输入商品名称" />
           </el-form-item>
           <el-form-item label="游戏名称">
-            <el-select v-model="params.gameName" placeholder="全部" filterable clearable>
+            <el-select v-model="gameName" placeholder="全部" filterable clearable>
               <el-option
                 v-for="item in getAllGames"
                 :key="item.id"
@@ -17,13 +17,13 @@
             </el-select>
           </el-form-item>
           <el-form-item label="卖家">
-            <el-input v-model="params.accountName" placeholder="输入卖家用户名" />
+            <el-input v-model="params.userName" placeholder="输入卖家用户名" />
           </el-form-item>
           <el-form-item label="卖家手机号">
-            <el-input v-model="params.accountName" placeholder="输入卖家手机号" />
+            <el-input v-model="params.phoneNum" placeholder="输入卖家手机号" />
           </el-form-item>
           <el-form-item label="销售模式">
-            <el-select v-model="params.accountLableId" placeholder="全部" filterable clearable style="maxWidth:185px">
+            <el-select v-model="params.saleMode" placeholder="全部" filterable clearable style="maxWidth:185px">
               <el-option
                 label="寄售交易"
                 value="寄售交易"
@@ -35,7 +35,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="审核状态">
-            <el-select v-model="params.status" placeholder="全部" filterable clearable style="maxWidth:185px">
+            <el-select v-model="status" placeholder="全部" filterable clearable style="maxWidth:185px">
               <el-option
                 label="待审核"
                 value="待审核"
@@ -43,10 +43,6 @@
               <el-option
                 label="审核拒绝"
                 value="审核拒绝"
-              />
-              <el-option
-                label="审核通过"
-                value="审核通过"
               />
             </el-select>
           </el-form-item>
@@ -89,20 +85,19 @@
       :columns="[
         { slot: 'selection' },
         { slot: 'pic' },
-        { label: '商品名称', prop: 'accountName', width: '250px' },
-        { label: '游戏名称', prop: 'gameName', width: '100px' },
+        { label: '商品名称', prop: 'title', width: '250px' },
+        { slot:'gameName' },
         { slot: 'price'},
-        { label: '销售模式', prop: 'saleUnit'},
+        { label: '销售模式', prop: 'saleMode',width:'130px'},
         { slot: 'label' },
-        { label: '卖家', prop: 'saleUnit'},
-        { label: '卖家手机号', prop: 'saleUnit'},
-        { slot: 'status' },
+        { slot: 'sallerUserName'},
+        {slot:'phoneNum'},
+        { slot: 'status' ,width:'130px'},
         { slot: 'creatTime' },
         { slot: 'operate'}
       ]"
       :page-obj="pageObj"
       @handleSelectionChange="handleSelectionChange"
-      @changeTableSort="sortChange"
     >
       <el-table-column
         slot="selection"
@@ -112,32 +107,60 @@
       <el-table-column
         slot="pic"
         label="主图"
-        width="120"
+        width="160"
       >
         <template v-slot="scope">
           <div class="pic-div">
-            <img v-if="scope.row.picUrl" :src="getPicRealUrl(scope.row.picUrl)">
+            <img v-if="scope.row.imagePath" :src="getPicRealUrl(scope.row.imagePath)">
             <img v-else :src="require('@/assets/images/picture.png')">
           </div>
         </template>
       </el-table-column>
       <el-table-column
         slot="price"
-        label="价格¥"
-        width="90"
+        label="价格"
+        width="120"
       >
         <template v-slot="scope">
-          {{ '¥' + scope.row.accountPrice }}
+          {{ scope.row.activityPrice?scope.row.activityPrice:scope.row.price }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        slot="sallerUserName"
+        label="卖家"
+        width="180"
+      >
+        <template v-slot="scope">
+          {{ scope.row.sallerUser.nickName }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        slot="phoneNum"
+        label="卖家手机号"
+        width="180"
+      >
+        <template v-slot="scope">
+          {{ scope.row.sallerUser.phoneNumber }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        slot="gameName"
+        label="游戏名称"
+        width="180"
+      >
+        <template v-slot="scope">
+          {{ getGameName(scope.row) }}
         </template>
       </el-table-column>
       <el-table-column
         slot="label"
         label="标签"
+        width="150"
       >
         <template v-slot="scope">
           <div class="label-div">
-            <p v-for="(item, key) in scope.row.accountLables" :key="key">
-              {{ item.name }}
+            <p v-for="(item, key) in scope.row.commodityLabelStr" :key="key">
+              {{ item }}
             </p>
           </div>
         </template>
@@ -145,19 +168,19 @@
       <el-table-column
         slot="status"
         label="审核状态"
-        width="100"
+        width="130"
       >
         <template v-slot="scope">
-          {{ scope.row.status }}
+          {{ scope.row.productStatus }}
         </template>
       </el-table-column>
       <el-table-column
         slot="creatTime"
         label="发布时间"
-        width="100"
+        width="160"
       >
         <template v-slot="scope">
-          {{ scope.row.creatTime }}
+          {{ scope.row.creationTime | timeFormatNotUtc }}
         </template>
       </el-table-column>
       <el-table-column
@@ -171,7 +194,7 @@
             <a href="javascript:void(0)">
               <p @click="goDtailProduct(scope.row)">查看</p>
             </a>
-            <a href="javascript:void(0)">
+            <a v-if="scope.row.status === 0" href="javascript:void(0)">
               <p @click="check(scope.row)">审核</p>
             </a>
           </div>
@@ -182,16 +205,10 @@
       v-model="isDialogShow"
       :title="title"
       @onRefresh="search"
+      @submit="submit"
     >
-      <div class="checkDialog">
-        <label><span>*</span> 审核备注：</label>
-        <el-input
-          v-model="checkRemark"
-          type="textarea"
-          :autosize="{ minRows: 3}"
-          maxlength="200"
-          placeholder="请输入审核意见，最多200字"
-        />
+      <div>
+        <p class="tips">{{ message }}</p>
       </div>
     </tips-dialog>
   </div>
@@ -201,8 +218,8 @@ import moment from 'moment'
 import TipsDialog from '@/k5game/components/TipsDialog'
 import listMixin from '@/k5game/mixins/list-mixin'
 import LxzTable from '@/k5game/components/LxzTable'
+// eslint-disable-next-line no-unused-vars
 import * as accountTransactionApi from '@/api/account-transaction'
-import * as accountPackageApi from '@/api/accountPackage'
 import config from '@/config'
 export default {
   name: 'AccountProductManage',
@@ -211,7 +228,6 @@ export default {
   data() {
     return {
       multipleSelection: [],
-      params: {},
       startTime: null,
       endTime: null,
       isDialogShow: false,
@@ -219,50 +235,68 @@ export default {
       isBatchOperate: false,
       creatTime: '',
       message: '',
-      checkRemark: ''
+      dataList: [],
+      params: {
+        commodityLabelIds: [],
+        sorting: '',
+        maxResultCount: 10,
+        skipCount: 0
+      },
+      productStatus: [
+        {
+          id: 0,
+          name: '待审核'
+        },
+        {
+          id: -1,
+          name: '审核失败'
+        }
+      ],
+      gameName: '',
+      status: '',
+      ids: [],
+      remark: ''
     }
   },
   computed: {
     getAllGames() {
       return this.$store.state.game.list
-    },
-    getGameName() {
-      return this.params.gameName
     }
   },
   watch: {
-    // 游戏 id
-    getGameName: {
-      handler(val, oldName) {
-        if (val) {
-          let gameId = null
-          this.getAllGames.some(item => {
-            if (item.name === val) {
-              gameId = item.id
-            }
-          })
-          accountPackageApi.GetGameLable({ gameId: gameId }).then(res => {
-            const items = res.data.result.items
-            this.allLabel = items
-          })
-        }
-      },
-      immediate: true
+    creatTime(val) {
+      if (val) {
+        this.params.startTime = moment(val[0]).format('YYYY-MM-DD')
+        this.params.endTime = moment(val[1]).add(1, 'days').format('YYYY-MM-DD')
+      } else {
+        this.params.startTime = ''
+        this.params.endTime = ''
+      }
     },
-    startTime(val) {
-      this.params.startTime = moment(val).format('YYYY-MM-DD')
+    gameName(val) {
+      if (val) {
+        this.getAllGames.some(item => {
+          if (item.name === val) {
+            this.params.gameId = item.id
+          }
+        })
+      } else {
+        this.params.gameId = ''
+      }
     },
-    endTime(val) {
-      this.params.endTime = moment(val).add(1, 'days').format('YYYY-MM-DD')
+    status(val) {
+      if (val) {
+        this.productStatus.some(item => {
+          if (item.name === val) {
+            this.params.status = item.id
+          }
+        })
+      } else {
+        this.params.status = ''
+      }
     }
   },
   created() {
-    // 接收从创建或编辑传来的activeName
-    const activeName = this.$route.query.activeName
-    if (activeName) {
-      this.activeName = activeName
-      activeName !== '全部商品' ? this.params.accountState = activeName : null
-    }
     this.search()
   },
   mounted() {
@@ -271,6 +305,15 @@ export default {
     }
   },
   methods: {
+    getGameName(value) {
+      let gameName = ''
+      this.getAllGames.some(item => {
+        if (item.id === value.gameId) {
+          gameName = item.name
+        }
+      })
+      return gameName
+    },
     // 搜索
     search() {
       if (this.params.startTime > this.params.endTime) {
@@ -286,45 +329,62 @@ export default {
     },
     // 批量审核
     batchCheck() {
-      this.title = '批量审核提示'
-      this.isDialogShow = true
-    },
-    // 单个审核
-    check() {
-
-    },
-    // 批量处理
-    batchHandle(str) {
+      this.ids = []
       if (this.multipleSelection.length === 0) {
         this.$message({
           message: '请至少选择一个数据',
           type: 'error'
         })
-      } else {
-        const ids = []
-        this.multipleSelection.map(item => {
-          ids.push(item.id)
-        })
-        const params = {
-          batchOperations: str,
-          ids: ids
-        }
-        accountTransactionApi.BatchOperationAsync(params).then(res => {
-          if (res.data.success) {
-            const items = res.data.result.items
-            if (items.length === 0) {
-              this.$message({
-                message: `${str.replace('批量', '')}成功`,
-                type: 'success'
-              })
-              this.search()
-            } else {
-              this.isBatchResultShow = true
-              this.batchResult = items
-            }
-          }
-        })
+        return false
       }
+      this.title = '批量审核提示'
+      this.message = '确定要审核通过这' + this.multipleSelection.length + '个商品吗，审核通过后将展示在商品列表中。'
+      this.isDialogShow = true
+      this.multipleSelection.some(item => {
+        this.ids.push(item.id)
+      })
+    },
+    // 单个审核
+    check(item) {
+      this.$router.push({
+        name: 'ProductCheckDetail',
+        query: {
+          id: item.id
+        }
+      })
+    },
+    submit() {
+      this.examineCommodity(this.ids)
+    },
+    // 审核商品
+    examineCommodity(ids) {
+      const params = {
+        ids: ids,
+        isPass: true,
+        remark: this.remark
+      }
+      accountTransactionApi.ExamineCommodityAsync(params).then(res => {
+        if (res.data.success) {
+          this.UpperShelfCommodityAsync(ids)
+        }
+      })
+    },
+    // 上架商品
+    UpperShelfCommodityAsync(ids) {
+      const params = {
+        ids: ids
+      }
+      accountTransactionApi.UpperShelfCommodityAsync(params).then(res => {
+        if (res.data.success) {
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          })
+          this.search()
+          this.isDialogShow = false
+          this.remark = ''
+        }
+      })
     },
     // 重置
     reset() {
@@ -339,10 +399,17 @@ export default {
       return config.baseUrl + config.pictureUrl + '/' + val
     },
     getList() {
-      accountTransactionApi.GetAccountTransactionProductListAsync(this.params).then(res => {
+      accountTransactionApi.GetPagedExamineCommoditiesAsync(this.params).then(res => {
         const result = res.data.result
         this.pageObj.totalCount = result.totalCount
         this.dataList = result.items
+        this.dataList.some(item => {
+          if (item.status === 0) {
+            this.$set(item, 'productStatus', '待审核')
+          } else if (item.status === -1) {
+            this.$set(item, 'productStatus', '审核失败')
+          }
+        })
       })
     },
     // 处理选中
@@ -352,23 +419,11 @@ export default {
     // 查看商品
     goDtailProduct(row) {
       this.$router.push({
-        name: 'ProductCheckDetail',
+        name: 'AccountProductDetail',
         query: {
           id: row.id
         }
       })
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'count') {
-        return
-      }
-      if (order === 'ascending') {
-        this.params.sorting = `${prop} asc`
-      } else {
-        this.params.sorting = `${prop} desc`
-      }
-      this.search()
     }
   }
 }
@@ -380,7 +435,7 @@ export default {
   span{
     color: red;
   }
-  lebal{
+  label{
     flex-shrink: 0;
   }
 }

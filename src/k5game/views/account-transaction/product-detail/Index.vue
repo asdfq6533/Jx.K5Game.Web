@@ -12,22 +12,24 @@
             <p>{{ getGameName }}</p>
           </div>
           <div class="group-item">
-            <label>销售模式：</label>
-            <p>{{ detail.saleMode }}</p>
+            <label>游戏区服：</label>
+            <p>{{ platform }}</p>
           </div>
-          <div class="group-item">
-            <label>游戏账号：</label>
-            <p>{{ sensInfo.account }}</p>
-          </div>
-          <div class="group-item">
-            <label>游戏密码：</label>
-            <p>{{ sensInfo.password }}</p>
-          </div>
+
           <div class="group-item">
             <label>价格：</label>
             <p>{{ detail.activityPrice?detail.activityPrice:detail.price }}</p>
           </div>
+          <div class="group-item">
+            <label>商品状态：</label>
+            <p>{{ status }}</p>
+          </div>
+          <div class="group-item">
+            <label>销售模式：</label>
+            <p>{{ detail.saleMode }}</p>
+          </div>
         </div>
+
         <div class="group">
           <div>
             <label>商品图片：</label>
@@ -40,20 +42,34 @@
           </div>
         </div>
         <div class="group">
-          <div class="group-item">
+          <div class="group-item" style="width:100%">
+            <label>商品描述：</label>
+            <p>{{ detail.detail }}</p>
+          </div>
+        </div>
+        <div class="group">
+          <div class="group-item" style="width:100%">
             <label>商品标签：</label>
             <p>{{ commodityLabelStr }}</p>
           </div>
         </div>
         <div class="group">
-          <div class="group-item">
-            <label>商品描述：</label>
-            <p>{{ detail.detail }}</p>
+          <div v-for="(val, prop, index) in baseInfo" :key="index" class="group-item">
+            <label>{{ prop + '：' }}</label>
+            <p v-html="val" />
           </div>
         </div>
       </form-detail>
       <form-detail title="补充信息">
         <div class="group">
+          <div class="group-item">
+            <label>游戏账号：</label>
+            <p>{{ sensInfo.account }}</p>
+          </div>
+          <div class="group-item">
+            <label>游戏密码：</label>
+            <p>{{ sensInfo.password }}</p>
+          </div>
           <div class="group-item">
             <label>手机绑定：</label>
             <p>{{ saleAccounts.isBindPhone?'是':'否' }}</p>
@@ -68,12 +84,26 @@
           </div>
           <div v-if="saleAccounts.isBindEmail" class="group-item">
             <label>邮箱账号：</label>
-            <p>{{ sensInfo.email }}</p>
+            <p>{{ sensInfo.bindEmail }}</p>
           </div>
-          <!-- <div class="group-item">
+          <div v-if="saleAccounts.isBindEmail" class="group-item">
             <label>邮箱密码：</label>
-            <p>qweasd</p>
-          </div> -->
+            <p>{{ sensInfo.emailPassword }}</p>
+          </div>
+          <div class="group-item">
+            <label>设置密保：</label>
+            <p>{{ sensInfo.encryptedForm?'是':'否' }}</p>
+          </div>
+        </div>
+        <div v-for="(item, index) in sensInfo.encryptedForm" :key="index" class="group">
+          <div class="group-item">
+            <label>密保问题{{ index + 1 }}：</label>
+            <p>{{ item.questionVal }}</p>
+          </div>
+          <div class="group-item">
+            <label>密保答案{{ index + 1 }}：</label>
+            <p>{{ item.answerVal }}</p>
+          </div>
         </div>
       </form-detail>
       <form-detail title="卖家联系信息">
@@ -133,7 +163,31 @@ export default {
       commodityLabelStr: '',
       saleAccounts: '',
       imgList: [],
-      sallerUser: ''
+      sallerUser: '',
+      platform: '',
+      productStatus: [
+        {
+          id: 0,
+          name: '待审核'
+        },
+        {
+          id: 2,
+          name: '销售中'
+        },
+        {
+          id: 3,
+          name: '已出售'
+        },
+        {
+          id: 4,
+          name: '已下架'
+        },
+        {
+          id: -1,
+          name: '审核失败'
+        }
+      ],
+      status: ''
     }
   },
   computed: {
@@ -164,9 +218,18 @@ export default {
           this.detail = res.data.result
           this.saleAccounts = this.detail.saleAccounts[0]
           this.sensInfo = JSON.parse(this.detail.saleAccounts[0].sensInfo)
-          this.baseInfo = JSON.parse(this.detail.saleAccounts[0].baseInfo)
+          const baseInfo = JSON.parse(this.detail.saleAccounts[0].baseInfo)
+          // eslint-disable-next-line no-unused-vars
+          const { platform, ...data } = baseInfo
+          this.baseInfo = data
+          this.platform = baseInfo.platform
           this.detail.commodityLabelStr.some(item => {
             this.commodityLabelStr += item + '，'
+          })
+          this.productStatus.some(item => {
+            if (this.detail.status === item.id) {
+              this.status = item.name
+            }
           })
           this.commodityLabelStr = this.commodityLabelStr.substring(0, this.commodityLabelStr.length - 1)
           const img = this.detail.imagePath.split('|')
@@ -174,6 +237,22 @@ export default {
             this.imgList.push(config.baseUrl + config.pictureUrl + item)
           })
           this.sallerUser = this.detail.sallerUser
+          this.getlogs()
+        }
+      })
+    },
+    getlogs() {
+      // 日志列表
+      accountTransictionApi.GetCommodityLogAsync({ id: this.detail.id }).then(res => {
+        // eslint-disable-next-line no-empty
+        if (res.data.success) {
+          this.logList = res.data.result
+          this.logList.some(item => {
+            if (item.option === '审核商品') {
+              this.checker = item.creatorUserId
+              this.checkRemark = item.remark
+            }
+          })
         }
       })
     }
@@ -189,7 +268,8 @@ export default {
     margin: 0;
     padding: 0;
   }
-  .container{
+  .formDetail{
+    .container{
     padding: 20px 10px;
     .group{
       display: flex;
@@ -229,6 +309,8 @@ export default {
       }
     }
   }
+  }
+
 }
 
 </style>

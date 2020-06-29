@@ -12,7 +12,7 @@
           <el-form-item label="邀请链接：" prop="link">
             <el-input v-model="params.link" placeholder="输入邀请链接" clearable />
           </el-form-item>
-          <el-form-item label="被邀请账号:" prop="linkAccounts">
+          <el-form-item label="被邀请账号：" prop="linkAccounts">
             <el-input v-model="params.linkAccounts" placeholder="输入电子邮箱" clearable />
           </el-form-item>
           <el-form-item label="下单渠道：" prop="sources">
@@ -26,12 +26,48 @@
                 value="k5电竞"
               />
               <el-option
-                label="淘宝"
-                value="淘宝"
+                label="淘宝--匠心"
+                value="淘宝--匠心"
               />
               <el-option
-                label="微信"
-                value="微信"
+                label="淘宝--骏网"
+                value="淘宝--骏网"
+              />
+              <el-option
+                label="淘宝--柒柒"
+                value="淘宝--柒柒"
+              />
+              <el-option
+                label="淘宝--见中"
+                value="淘宝--见中"
+              />
+              <el-option
+                label="淘宝--无极"
+                value="淘宝--无极"
+              />
+              <el-option
+                label="微信--露露"
+                value="微信--露露"
+              />
+              <el-option
+                label="微信--k5"
+                value="微信--k5"
+              />
+              <el-option
+                label="微信--敏敏"
+                value="微信--敏敏"
+              />
+              <el-option
+                label="微信--盈盈"
+                value="微信--盈盈"
+              />
+              <el-option
+                label="微信--团子"
+                value="微信--团子"
+              />
+              <el-option
+                label="微信--机房"
+                value="微信--机房"
               />
               <el-option
                 label="补单"
@@ -39,7 +75,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="下单时间:" prop="orderTime">
+          <el-form-item label="下单时间：" prop="orderTime">
             <div class="chooseTime">
               <el-date-picker
                 v-model="startTime"
@@ -80,7 +116,7 @@
         { slot: 'selection' },
         { label: '订单号', prop: 'id',width: '170px'},
         { label: '手机号码', prop: 'phoneNum',width: '130px' },
-        { label: '邀请链接', prop: 'link' },
+        { label: '邀请链接', prop: 'link',width: '250px'},
         {slot:'linkAccounts'},
         { label: '下单渠道', prop: 'sources',width: '100px'},
         {label: '收款金额', prop: 'totalAmount',width: '100px'},
@@ -107,6 +143,7 @@
       <el-table-column
         slot="linkAccounts"
         label="被邀请账号"
+        width="230"
       >
         <template v-slot="scope">
           {{ scope.row.linkAccountsStr }}
@@ -259,7 +296,7 @@ export default {
     },
     // 导出勾选项
     exportChoice() {
-      if (!this.multipleSelection) {
+      if (!this.multipleSelection.length) {
         this.$message({
           message: '请勾选操作项',
           type: 'error'

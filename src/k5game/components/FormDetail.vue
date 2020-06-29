@@ -31,7 +31,8 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.title-container{
+.formDetail{
+  .title-container{
   color: #f93;
   padding-bottom: 5px;
   border-bottom: 1px solid #f93;
@@ -39,6 +40,7 @@ export default {
     padding: 5px 0;
     border-bottom: 5px solid #f93;
   }
+}
 }
 
 </style>

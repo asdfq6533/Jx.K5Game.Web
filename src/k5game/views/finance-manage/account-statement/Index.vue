@@ -81,7 +81,8 @@
         { label: '支付方式', prop: 'title', width: '180px' },
         { label: '下单时间', prop: 'title', width: '180px' },
         { label: '是否申诉单', prop: 'title', width: '180px' },
-        { label: '申诉结果', prop: 'title', width: '180px' },
+        { slot: 'complaintResults' },
+        { slot: 'operate'}
       ]"
       :page-obj="pageObj"
       @handleSelectionChange="handleSelectionChange"
@@ -92,16 +93,24 @@
         width="45"
       />
       <el-table-column
-        slot="pic"
-        label="主图"
-        width="160"
+        slot="complaintResults"
+        label="申诉结果"
       >
-        <template v-slot="scope">
-          <div class="pic-div">
-            <img v-if="scope.row.imagePath" :src="getPicRealUrl(scope.row.imagePath)">
-            <img v-else :src="require('@/assets/images/picture.png')">
-          </div>
-        </template>
+        <el-table-column
+          prop="name"
+          label="卖家"
+          width="120"
+        />
+        <el-table-column
+          prop="name"
+          label="买家"
+          width="120"
+        />
+        <el-table-column
+          prop="name"
+          label="平台"
+          width="120"
+        />
       </el-table-column>
       <el-table-column
         slot="price"
@@ -302,49 +311,6 @@ export default {
       })
       return gameName
     },
-    // 批量下架
-    batchRemove() {
-      this.id = []
-      if (this.multipleSelection.length === 0) {
-        this.$message.error('请至少选择一个数据')
-        return
-      }
-      for (let i = 0; i < this.multipleSelection.length; i++) {
-        if (this.multipleSelection[i].status !== 2) {
-          this.$message.error('请选择销售中的商品')
-          return
-        }
-      }
-      const number = this.multipleSelection.length
-      this.title = '批量下架提示'
-      this.message = '确定要下架' + number + '款商品吗？下架后，商品将不在列表显示。'
-      this.isDialogShow = true
-      this.multipleSelection.some(item => {
-        this.id.push(item.id)
-      })
-    },
-    // 单个下架
-    remove(item) {
-      this.id = []
-      this.title = '下架提示'
-      this.message = '确定要下架“' + item.title + '”吗？下架后，商品将不在出售列表显示。'
-      this.isDialogShow = true
-      this.id.push(item.id)
-      this.opertation = '下架'
-    },
-    // 下架
-    lowerShelfCommodity(id) {
-      accountTransactionApi.LowerShelfCommodityAsync({ id: id }).then(res => {
-        if (res.data.success) {
-          this.$message({
-            message: '操作成功',
-            type: 'success'
-          })
-          this.search()
-          this.isDialogShow = false
-        }
-      })
-    },
     // 搜索
     search() {
       this.params.skipCount = 0
@@ -408,6 +374,14 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-
+<style lang="scss">
+.el-table thead.is-group th{
+  text-align: center;
+}
+.el-table .cell{
+  text-align: center;
+  .icons-operate{
+    justify-content: center;
+  }
+}
 </style>

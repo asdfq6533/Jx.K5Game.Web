@@ -31,12 +31,14 @@ export default {
 
 <style lang="scss" scoped>
 @import '~@/styles/variables.scss';
-.title-container{
+.orderDetail{
+  .title-container{
   padding-bottom: 5px;
   border-bottom: 2px solid #f93;
   span{
     padding: 5px 0;
   }
+}
 }
 
 </style>

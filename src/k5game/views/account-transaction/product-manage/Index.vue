@@ -205,6 +205,15 @@
     >
       <div>
         <p class="tips">{{ message }}</p>
+        <div class="remark">
+          <label> <span style="color:red">*</span> 下架说明：</label>
+          <el-input
+            v-model="remark"
+            type="textarea"
+            :rows="2"
+            placeholder="请输入内容"
+          />
+        </div>
       </div>
     </tips-dialog>
   </div>
@@ -257,7 +266,8 @@ export default {
         sorting: '',
         maxResultCount: 10,
         skipCount: 0
-      }
+      },
+      remark: ''
     }
   },
   computed: {
@@ -348,7 +358,11 @@ export default {
     },
     // 下架
     lowerShelfCommodity(id) {
-      accountTransactionApi.LowerShelfCommodityAsync({ id: id }).then(res => {
+      const params = {
+        commodityIds: id,
+        reason: ''
+      }
+      accountTransactionApi.LowerShelfCommodityAsync(params).then(res => {
         if (res.data.success) {
           this.$message({
             message: '操作成功',
@@ -366,6 +380,10 @@ export default {
       this.getList()
     },
     submit() {
+      if (!this.remark) {
+        this.$message.error('请填写下架说明')
+        return
+      }
       this.lowerShelfCommodity(this.id)
     },
     // 重置
@@ -422,6 +440,12 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-
+<style lang="scss">
+.remark{
+  display: flex;
+  margin-top: 25px;
+  label{
+    flex-shrink: 0;
+  }
+}
 </style>

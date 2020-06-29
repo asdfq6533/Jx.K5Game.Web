@@ -17,14 +17,14 @@ const taskRouter = {
       path: 'task-list',
       component: () => import('@/k5game/views/recruiting-tasks/murloc-skin/Index'),
       name: 'TaskList',
-      meta: { title: '鱼人皮肤', noCache: true, roles: ['Pages.FishSkin'] }
+      meta: { title: '鱼人皮肤', noCache: true, roles: ['Pages.FishSkin'], breadNumber: 2 }
     },
     {
       path: 'task-detail',
       component: () => import('@/k5game/views/recruiting-tasks/task-detail/Index'),
       name: 'TaskDetail',
       hidden: true,
-      meta: { title: '任务详情', noCache: true, roles: ['Pages.FishSkin'] }
+      meta: { title: '任务详情', noCache: true, roles: ['Pages.FishSkin'], breadNumber: 3 }
     }
   ]
 }
